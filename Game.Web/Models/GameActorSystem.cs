@@ -6,8 +6,8 @@ namespace Game.Web.Models
 {
 	public class GameActorSystem
 	{
-		private static ActorSystem ActorSystem;
-		private static IGameEventsPusher _gameEventsPusher;
+		private static ActorSystem			ActorSystem;
+		private static IGameEventsPusher	_gameEventsPusher;
 
 		public static void Create()
 		{
@@ -15,8 +15,8 @@ namespace Game.Web.Models
 
 			ActorSystem = ActorSystem.Create("GameSystem");
 
-			ActorReferences.GameController = ActorSystem.ActorOf<GameControllerActor>();
-			ActorReferences.SignalRBridge = ActorSystem.ActorOf(
+			ActorReferences.GameController	= ActorSystem.ActorOf<GameControllerActor>();
+			ActorReferences.SignalRBridge	= ActorSystem.ActorOf(
 				Props.Create(() => new SignalRBridgeActor(_gameEventsPusher, ActorReferences.GameController)),
 					"SignalRBridge"
 				);

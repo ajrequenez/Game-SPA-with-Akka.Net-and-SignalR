@@ -11,17 +11,16 @@ using System;
 using Akka.Cluster.Sharding;
 using Akka.Remote.Hosting;
 using Akka.Util;
+using Game.ActorModel.Actors;
+using Game.ActorModel.ExternalSystems;
+using Game.Web.Models;
 
 namespace Game.Web
 {
-    public struct Echo { }
-
     public class EchoActor : ReceiveActor
     {
-        private readonly string _entityId;
-        public EchoActor(string entityId)
+        public EchoActor()
         {
-            _entityId = entityId;
             ReceiveAny(message => {
                 Sender.Tell($"{Self} rcv {message}");
             });
@@ -30,25 +29,6 @@ namespace Game.Web
 
     public class Program
     {
-        private const int NumberOfShards = 5;
-
-        private static Option<(string, object)> ExtractEntityId(object message)
-            => message switch
-            {
-                string id => (id, id),
-                _ => Option<(string, object)>.None
-            };
-
-        private static string? ExtractShardId(object message)
-            => message switch
-            {
-                string id => (id.GetHashCode() % NumberOfShards).ToString(),
-                _ => null
-            };
-
-        private static Props PropsFactory(string entityId)
-            => Props.Create(() => new EchoActor(entityId));
-
         public static async Task Main(string[] args)
         {
 
@@ -59,14 +39,20 @@ namespace Game.Web
             builder.Services.AddAkka("MyActorSystem", configurationBuilder =>
             {
                 configurationBuilder
-                    .WithRemoting(hostname: "localhost", port: 8110)
-                    .WithClustering(new ClusterOptions { SeedNodes = new[] { Address.Parse("akka.tcp://MyActorSystem@localhost:8110"), } })
-                    .WithShardRegion<Echo>(
-                        typeName: "myRegion",
-                        entityPropsFactory: PropsFactory,
-                        extractEntityId: ExtractEntityId,
-                        extractShardId: ExtractShardId,
-                        shardOptions: new ShardOptions());
+                    .WithActors((system, registry) =>
+                    {
+                        var gameController = system.ActorOf(Props.Create(() => new GameControllerActor()), "gameController");
+                        registry.Register<GameControllerActor>(gameController);
+
+                        IGameEventsPusher gameEventsPusher = new SignalRGameEventPusher();
+                        var signalRBridge = system.ActorOf(Props.Create(() => new SignalRBridgeActor(gameEventsPusher, gameController)), "signalRBridge");
+                        registry.Register<SignalRBridgeActor>(signalRBridge);
+                    })
+                    .WithActors((system, registry) =>
+                    {
+                        var echo = system.ActorOf(Props.Create(() => new EchoActor()), "echo");
+                        registry.Register<EchoActor>(echo);
+                    });
             });
 
             var app = builder.Build();
@@ -93,7 +79,7 @@ namespace Game.Web
 
             app.MapGet("/", async (context) =>
             {
-                var echo = context.RequestServices.GetRequiredService<ActorRegistry>().Get<Echo>();
+                var echo = context.RequestServices.GetRequiredService<ActorRegistry>().Get<EchoActor>();
                 var body = await echo.Ask<string>(
                         message: context.TraceIdentifier,
                         cancellationToken: context.RequestAborted)
