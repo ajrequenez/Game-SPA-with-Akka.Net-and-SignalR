@@ -10,9 +10,21 @@
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' " />
   <ItemGroup>
     <None Remove="Akka" />
+    <None Remove="Akka.Hosting" />
+    <None Remove="Serilog" />
+    <None Remove="Akka.Logger.Serilog" />
+    <None Remove="Akka.Remote" />
+    <None Remove="Akka.Cluster" />
+    <None Remove="Akka.Cluster.Hosting" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Akka" Version="1.4.45" />
+    <PackageReference Include="Akka" Version="1.4.46" />
+    <PackageReference Include="Akka.Hosting" Version="0.5.1" />
+    <PackageReference Include="Serilog" Version="2.12.0" />
+    <PackageReference Include="Akka.Logger.Serilog" Version="1.4.42" />
+    <PackageReference Include="Akka.Remote" Version="1.4.46" />
+    <PackageReference Include="Akka.Cluster" Version="1.4.46" />
+    <PackageReference Include="Akka.Cluster.Hosting" Version="0.5.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Game.ActorModel\Game.ActorModel.csproj">

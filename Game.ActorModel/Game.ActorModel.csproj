@@ -8,8 +8,16 @@
 
   <ItemGroup>
     <None Remove="Akka" />
+    <None Remove="Messages\" />
+    <None Remove="Actors\" />
+    <None Remove="ExternalSystems\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Akka" Version="1.4.45" />
+    <PackageReference Include="Akka" Version="1.4.46" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Messages\" />
+    <Folder Include="Actors\" />
+    <Folder Include="ExternalSystems\" />
   </ItemGroup>
 </Project>
