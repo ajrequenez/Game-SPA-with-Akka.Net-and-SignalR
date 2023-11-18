@@ -11,15 +11,15 @@ namespace Game.Web.Models
 
 		public static void Create()
 		{
-			_gameEventsPusher = new SignalRGameEventPusher();
+			//_gameEventsPusher = new SignalRGameEventPusher();
 
-			ActorSystem = ActorSystem.Create("GameSystem");
+			//ActorSystem = ActorSystem.Create("GameSystem");
 
-			ActorReferences.GameController	= ActorSystem.ActorOf<GameControllerActor>();
-			ActorReferences.SignalRBridge	= ActorSystem.ActorOf(
-				Props.Create(() => new SignalRBridgeActor(_gameEventsPusher, ActorReferences.GameController)),
-					"SignalRBridge"
-				);
+			//ActorReferences.GameController	= ActorSystem.ActorOf<GameControllerActor>();
+			//ActorReferences.SignalRBridge	= ActorSystem.ActorOf(
+			//	Props.Create(() => new SignalRBridgeActor(_gameEventsPusher, ActorReferences.GameController)),
+			//		"SignalRBridge"
+			//	);
 		}
 
 		public static void Stopdown()

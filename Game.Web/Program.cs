@@ -36,6 +36,7 @@ namespace Game.Web
 
 
             builder.Services.AddControllersWithViews();
+            builder.Services.AddSingleton<SignalRGameEventPusher, SignalRGameEventPusher>();
             builder.Services.AddAkka("MyActorSystem", configurationBuilder =>
             {
                 configurationBuilder

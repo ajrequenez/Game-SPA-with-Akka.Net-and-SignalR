@@ -6,21 +6,21 @@ namespace Game.Web.Models
 {
 	public class SignalRGameEventPusher : IGameEventsPusher
 	{
-        private readonly IHubContext _gameHubContext;
+        private readonly IHubContext<GameHub> _gameHubContext;
 
-		public SignalRGameEventPusher()
+		public SignalRGameEventPusher(IHubContext<GameHub> hub)
 		{
-            //_gameHubContext = hubContext;
+            _gameHubContext = hub;
 		}
 
         public void PlayerJoined(string playerName, int playerHealth)
         {
-            // _gameHubContext.Clients.All.playerJoined(playerName, playerHealth);
+            _gameHubContext.Clients.All.SendAsync("playerJoined", playerName, playerHealth);
         }
 
         public void UpdatePlayerHealth(string playerName, int playerHealth)
         {
-            // _gameHubContext.Clients.All.updatePlayerHealth(playerName, playerHealth);
+            _gameHubContext.Clients.All.SendAsync("updatePlayerHealth", playerName, playerHealth);
         }
     }
 }
